@@ -25,6 +25,12 @@ interface ISetCardDetails {
   payload: ICardDetails;
 }
 
+export type Actions =
+  | IIncrementId
+  | IDecrementId
+  | ISetChangeValue
+  | ISetCardDetails;
+
 export const IncrementId = (): IIncrementId => ({
   type: ActionType.IncrementId
 });
@@ -42,10 +48,3 @@ export const SetCardDetails = (response: ICardDetails): ISetCardDetails => ({
   type: ActionType.SetCardDetails,
   payload: response
 });
-
-// App Types
-export type Action =
-  | IIncrementId
-  | IDecrementId
-  | ISetChangeValue
-  | ISetCardDetails;

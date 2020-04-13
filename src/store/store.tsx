@@ -1,6 +1,6 @@
 import React, { createContext, useReducer, useEffect } from "react";
 
-import { SetCardDetails, Action, ActionType } from "./store.actions";
+import { SetCardDetails, Actions, ActionType } from "./store.actions";
 import { ICardDetails } from "./store.types";
 
 interface IStoreState {
@@ -11,7 +11,7 @@ interface IStoreState {
 
 interface IAppContext {
   state: IStoreState;
-  dispatch: React.Dispatch<Action>;
+  dispatch: React.Dispatch<Actions>;
 }
 
 const initialState: IStoreState = {
@@ -27,35 +27,37 @@ const store = createContext<IAppContext>({
 
 const { Provider } = store;
 
-const AppProvider = ({ children }: { children: JSX.Element }) => {
-  const [state, dispatch] = useReducer((state: IStoreState, action: Action) => {
-    const { id: count, changeValue } = state;
+const reducer = (state: IStoreState, action: Actions) => {
+  const { id: count, changeValue } = state;
 
-    switch (action.type) {
-      case ActionType.IncrementId:
-        return {
-          ...state,
-          id: count + changeValue
-        };
-      case ActionType.DecrementId:
-        return {
-          ...state,
-          id: count - changeValue
-        };
-      case ActionType.SetChangeValue:
-        return {
-          ...state,
-          changeValue: action.payload
-        };
-      case ActionType.SetCardDetails:
-        return {
-          ...state,
-          cardDetails: action.payload
-        };
-      default:
-        return state;
-    }
-  }, initialState);
+  switch (action.type) {
+    case ActionType.IncrementId:
+      return {
+        ...state,
+        id: count + changeValue
+      };
+    case ActionType.DecrementId:
+      return {
+        ...state,
+        id: count - changeValue
+      };
+    case ActionType.SetChangeValue:
+      return {
+        ...state,
+        changeValue: action.payload
+      };
+    case ActionType.SetCardDetails:
+      return {
+        ...state,
+        cardDetails: action.payload
+      };
+    default:
+      return state;
+  }
+};
+
+const AppProvider = ({ children }: { children: JSX.Element }) => {
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   useStoreSideEffect(state, dispatch);
 
@@ -64,7 +66,7 @@ const AppProvider = ({ children }: { children: JSX.Element }) => {
 
 const useStoreSideEffect = (
   state: IStoreState,
-  dispatch: React.Dispatch<Action>
+  dispatch: React.Dispatch<Actions>
 ) => {
   useEffect(() => {
     fetch(`https://api.magicthegathering.io/v1/cards/${state.id}`)
